@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sentinel Monitoring Dashboard</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+            text-align: center;
+        }
+
+        h1 {
+            color: #38bdf8;
+        }
+
+        .card {
+            background: #1e293b;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 12px;
+            display: inline-block;
+            width: 200px;
+        }
+
+        .value {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .alerts {
+            margin-top: 30px;
+            text-align: left;
+            width: 60%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .alert {
+            background: #dc2626;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🚀 Sentinel Real-Time Monitoring</h1>
+
+<div class="card">
+    <h2>CPU Usage</h2>
+    <div id="cpu" class="value">0%</div>
+</div>
+
+<div class="card">
+    <h2>Memory Usage</h2>
+    <div id="memory" class="value">0%</div>
+</div>
+
+<div class="alerts">
+    <h2>⚠️ Alerts</h2>
+    <div id="alertBox"></div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+
+    socket.on("metrics", data => {
+        document.getElementById("cpu").innerText = data.cpuUsage + "%";
+        document.getElementById("memory").innerText = data.memoryUsage + "%";
+    });
+
+    socket.on("alerts", alerts => {
+        const box = document.getElementById("alertBox");
+
+        alerts.forEach(alert => {
+            const div = document.createElement("div");
+            div.className = "alert";
+            div.innerText = alert.message;
+            box.prepend(div);
+        });
+    });
+</script>
+
+</body>
+</html>
