@@ -2,12 +2,17 @@ const http = require("http")
 const Alert = require("./src/models/Alert")
 const connectDB = require("./src/db/db");
 connectDB();
+const startMetricWorker = require("./src/worker/metricWorker");;
+startMetricWorker();
 const {Server} = require("socket.io")
 const express = require("express")
 const si = require("systeminformation")
 const cors = require("cors");
 const { cpuUsage, memoryUsage } = require("process");
 const { timeStamp } = require("console");
+const Metric = require("./src/models/Metric")
+const metricQueue = require("./src/queue/metricQueue");
+
 
 const app = express();
 const PORT = 5000;
@@ -54,6 +59,20 @@ app.get("/alerts",async(req,res) => {
     }
 })
 
+app.get("/metrics/history", async(req,res) => {
+    try{
+        const metrics = await Metric.find()
+        .sort({createdAt: -1})
+        .limit(100);
+
+        res.json(metrics);
+    }catch(err){
+        res.status(500).json({
+            error: "Failed to fetch metric history"
+        })
+    }
+})
+
 
 io.on("connection",(socket)=>{
         console.log("Client connected.", socket.id);
@@ -77,11 +96,21 @@ io.on("connection",(socket)=>{
             
             const now = Date.now();
 
+            const metricData = {
+                cpuUsage: cpu,
+                memoryUsage: memory,
+                createdAt: new Date()
+            }
+
             socket.emit("metrics", {
                 cpuUsage: cpu,
                 memoryUsage: memory,
                 timeStamp: new Date()
             });      
+            
+            metricQueue.enqueue({
+                metricData
+            })
 
             const alerts = []
       
