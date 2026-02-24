@@ -10,9 +10,7 @@
             text-align: center;
         }
 
-        h1 {
-            color: #38bdf8;
-        }
+        h1 { color: #38bdf8; }
 
         .card {
             background: #1e293b;
@@ -41,6 +39,12 @@
             padding: 10px;
             margin: 10px 0;
             border-radius: 8px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {opacity:0; transform:translateY(-10px);}
+            to {opacity:1; transform:translateY(0);}
         }
     </style>
 </head>
@@ -65,7 +69,12 @@
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
+document.addEventListener("DOMContentLoaded", () => {
+
     const socket = io();
+    const alertBox = document.getElementById("alertBox");
+
+    console.log("Dashboard connected to socket");
 
     socket.on("metrics", data => {
         document.getElementById("cpu").innerText = data.cpuUsage + "%";
@@ -73,15 +82,17 @@
     });
 
     socket.on("alerts", alerts => {
-        const box = document.getElementById("alertBox");
+        console.log("Received alerts:", alerts);
 
         alerts.forEach(alert => {
             const div = document.createElement("div");
             div.className = "alert";
             div.innerText = alert.message;
-            box.prepend(div);
+            alertBox.prepend(div);
         });
     });
+
+});
 </script>
 
 </body>
