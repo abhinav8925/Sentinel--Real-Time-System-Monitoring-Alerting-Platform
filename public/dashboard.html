@@ -9,9 +9,7 @@
             color: white;
             text-align: center;
         }
-
         h1 { color: #38bdf8; }
-
         .card {
             background: #1e293b;
             padding: 20px;
@@ -20,12 +18,7 @@
             display: inline-block;
             width: 200px;
         }
-
-        .value {
-            font-size: 32px;
-            font-weight: bold;
-        }
-
+        .value { font-size: 32px; font-weight: bold; }
         .alerts {
             margin-top: 30px;
             text-align: left;
@@ -33,18 +26,11 @@
             margin-left: auto;
             margin-right: auto;
         }
-
         .alert {
             background: #dc2626;
             padding: 10px;
             margin: 10px 0;
             border-radius: 8px;
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from {opacity:0; transform:translateY(-10px);}
-            to {opacity:1; transform:translateY(0);}
         }
     </style>
 </head>
@@ -74,20 +60,28 @@ document.addEventListener("DOMContentLoaded", () => {
     const socket = io();
     const alertBox = document.getElementById("alertBox");
 
-    console.log("Dashboard connected to socket");
-
+    
     socket.on("metrics", data => {
         document.getElementById("cpu").innerText = data.cpuUsage + "%";
         document.getElementById("memory").innerText = data.memoryUsage + "%";
     });
 
+
     socket.on("alerts", alerts => {
-        console.log("Received alerts:", alerts);
+
+
+        if(alertBox.childElementCount === 0) {
+            alertBox.innerHTML = "";
+        }
 
         alerts.forEach(alert => {
             const div = document.createElement("div");
             div.className = "alert";
-            div.innerText = alert.message;
+
+            const time = new Date(alert.createdAt).toLocaleTimeString();
+
+            div.innerText = `[${time}] ${alert.message}`;
+
             alertBox.prepend(div);
         });
     });

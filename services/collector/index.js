@@ -15,8 +15,12 @@ setInterval(async() =>{
             createdAt: new Date(),
         };
         await  metricQueue.enqueue(metricData);
-        console.log("Collected Metric: ",metricData);
+        const istTime = new Date().toLocaleString("en-IN",{
+            timezone: "Asia/Kolkata"
+        })
+        console.log("Collected Metric @IST: ",istTime)
+        console.log(metricData);
     }catch(err){
         console.log("Collector error: ", err)
     }
-},2000)
+},10000)

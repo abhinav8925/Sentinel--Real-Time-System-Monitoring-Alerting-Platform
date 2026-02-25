@@ -94,11 +94,19 @@ app.delete("/clear/metrics", async(req,res)=>{
 
 io.on("connection",(socket)=>{
         console.log("Client connected.", socket.id);
+
+        Alert.find()
+        .sort({createdAt: -1})
+        .limit(20)
+        .then(alerts => {
+            socket.emit("alerts",alerts.reverse());
+        });
         
         const interval = setInterval(async ()=>{
         try{
             
             const latestMetric = await Metric.findOne().sort({createdAt: -1});
+            
             if(latestMetric){
                 socket.emit("metrics", {
                     cpuUsage: latestMetric.cpuUsage,

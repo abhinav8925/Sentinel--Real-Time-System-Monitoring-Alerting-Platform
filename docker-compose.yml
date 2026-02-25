@@ -1,0 +1,43 @@
+# version: "3.8"
+
+services:
+  api:
+    build: .
+    container_name: sentinel-api
+    command: node services/api/index.js
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    restart: unless-stopped
+    depends_on:
+      - worker
+      - alert
+  
+  collector:
+    build: .
+    container_name: sentinel-collector
+    command: node services/collector/index.js
+    env_file:
+      - .env
+    restart: unless-stopped
+    depends_on:
+      - worker
+  
+  worker:
+    build: .
+    container_name: sentinel-worker
+    command: node services/worker/index.js
+    env_file:
+      - .env
+    restart: unless-stopped
+  
+  alert:
+    build: .
+    container_name: sentinel-alert
+    command: node services/alert/index.js
+    env_file:
+      - .env
+    restart: unless-stopped
+    depends_on:
+      - worker
