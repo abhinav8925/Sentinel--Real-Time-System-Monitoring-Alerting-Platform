@@ -49,7 +49,7 @@
 </div>
 
 <div class="alerts">
-    <h2>⚠️ Alerts</h2>
+    <h2> Alerts</h2>
     <div id="alertBox"></div>
 </div>
 
@@ -59,35 +59,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const socket = io();
     const alertBox = document.getElementById("alertBox");
-
     
     socket.on("metrics", data => {
         document.getElementById("cpu").innerText = data.cpuUsage + "%";
         document.getElementById("memory").innerText = data.memoryUsage + "%";
     });
 
-
+    
     socket.on("alerts", alerts => {
-
-
-        if(alertBox.childElementCount === 0) {
-            alertBox.innerHTML = "";
-        }
 
         alerts.forEach(alert => {
             const div = document.createElement("div");
             div.className = "alert";
 
             const time = new Date(alert.createdAt).toLocaleTimeString();
-
             div.innerText = `[${time}] ${alert.message}`;
 
             alertBox.prepend(div);
         });
+
+        
+        while (alertBox.childElementCount > 20) {
+            alertBox.removeChild(alertBox.lastChild);
+        }
     });
 
 });
 </script>
-
 </body>
 </html>

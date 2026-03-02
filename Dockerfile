@@ -4,10 +4,10 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install --production
+RUN npm install 
 
 COPY . .
 
 EXPOSE 5000
 
-# CMD ["node", "service/api/index.js"]
+CMD ["node", "service/api/index.js"]

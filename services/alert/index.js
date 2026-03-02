@@ -9,7 +9,7 @@ connectDB();
 console.log("Alert Engine Service Started");
 
 const CPU_THRESHOLD = 80;
-const MEMORY_THRESHOLD = 85;
+const MEMORY_THRESHOLD = 30;
 const COOLDOWN_MS = 30000;
 
 let lastAlertTime = {
