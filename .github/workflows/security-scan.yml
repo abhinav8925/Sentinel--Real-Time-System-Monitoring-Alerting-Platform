@@ -1,0 +1,42 @@
+name: Dependency Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install jq
+      run: sudo apt-get install jq
+
+    - name: Check package.json
+      run: |
+        if [ ! -f package.json ]; then
+          echo "No package.json found"
+          exit 0
+        fi
+
+    - name: Run security scan
+      run: |
+        RESPONSE=$(curl -s -X POST https://ai-dependency-risk-analyzer.onrender.com/analyze \
+        -H "user-email: ci@bot.com" \
+        -F "file=@package.json")
+
+        echo "Response: $RESPONSE"
+
+        RISK=$(echo $RESPONSE | jq -r '.summary.riskSeverity')
+
+        echo "Risk Level: $RISK"
+
+        if [ "$RISK" = "HIGH" ]; then
+          echo "❌ High risk detected"
+          exit 1
+        fi
+
+        echo "✅ Dependencies are safe"
