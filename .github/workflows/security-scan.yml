@@ -34,7 +34,7 @@ jobs:
 
         ERROR=$(echo $RESPONSE | jq -r '.error.message')
 
-        if ["$ERROR" != "null"]; then
+        if [ "$ERROR" != "null" ]; then
           echo "❌ API Error: $ERROR"
           exit 1
         fi
