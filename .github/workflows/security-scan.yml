@@ -46,6 +46,8 @@ jobs:
         if [ "$RISK" = "HIGH" ]; then
           echo "❌ High risk detected"
           exit 1
+        elif [ "$RISK" = "MODERATE" ]; then
+          echo "⚠️ Moderate risk detected."
+        else
+          echo "✅ Dependencies are safe"
         fi
-
-        echo "✅ Dependencies are safe"
